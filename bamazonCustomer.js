@@ -20,6 +20,7 @@ function validateInput(value) {
 	if (integer && (sign === 1)) {
 		return true;
 	} else {
+
 		return 'Please enter a whole non-zero number.';
 	}
 }
@@ -47,13 +48,50 @@ let orderForm = function(){
         
         connection.query(query, {item_id: item}, function(err,data){
             if(err) throw err;
-            console.log('data = ' + JSON.stringify(data));
+            // console.log('data = ' + JSON.stringify(data));
             if (data.length === 0){
                 console.log(`ERROR: Invalid Item ID. Please select a valid Item ID.`)
                 productSearch();
             }
             else{
+                let productData = data[0];
+
+                //  console.log('productData = ' + JSON.stringify(productData));
+                // console.log('productData.stock_quantity = ' + productData.stock_quantity);
                 
+                if (quantity <= productData.stock_quantity){
+                    console.log('Congratulations, the product you requested is in stock! Placing order!');
+
+                    // let updateQueryStr = `UPDATE product SET stock_quantity = ${productData.stock_quantity - quantity} WHERE item_id = ${item}`;
+                    let newQuantity = productData.stock_quantity - quantity; 
+                    console.log(newQuantity)
+                    let updateQueryStr = connection.query("UPDATE products SET ? WHERE ?",
+                    [
+                      {
+                        stock_quantity: newQuantity
+                      },
+                      {
+                        item_id: item
+                      }
+                    ],
+                    function(err,data){
+                        if(err) throw err;
+                        // console.log(`Item effected ${data}`)
+                        
+                        console.log(`Your oder has been placed! Your total is $${productData.price*quantity}.`);
+                        console.log("Thanks for shopping at The Hats, Mats, Rats, & Cats Emporium!")
+                        console.log("\n---------------------------------------------------------------------\n")
+                        productSearch();
+                        
+                    })
+
+                    console.log(updateQueryStr.sql)
+                }else{
+                    console.log('Sorry, there is not enough product in stock, your order can not be placed as is.');
+					console.log('Please modify your order.');
+                    console.log("\n---------------------------------------------------------------------\n");
+                    productSearch();
+                }
             }
         })
     })
@@ -65,7 +103,7 @@ function allSearch(){
         for (let i = 0; i < res.length;i++){
              console.log(`ID ${res[i].item_id}: Item name ${res[i].product_name}, Department ${res[i].department_name}, Price $${res[i].price}, currently in stock ${res[i].stock_quantity}.`)
         };
-        productSearch();
+        orderForm();
        
     })
 }
@@ -88,7 +126,7 @@ function nameSearch(){
                 }
                 
             })
-            productSearch();  
+            orderForm();  
         })
 };
 
@@ -110,7 +148,7 @@ function idSearch(){
                 }
                 
             })
-            productSearch();  
+            orderForm();  
         })
 };
 
@@ -137,7 +175,7 @@ function departmentSearch(){
                 }
                 
             })
-            productSearch();  
+            orderForm();  
   
         })
 };
@@ -202,8 +240,8 @@ let loginBase = function(){
 };
 
  let staffLogin = function(){
-
- }
+    loginScreen()
+ };
 
 function loginScreen(){
     Inquirer
