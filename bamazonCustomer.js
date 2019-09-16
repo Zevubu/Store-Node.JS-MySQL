@@ -2,7 +2,8 @@ let Mysql = require("mysql");
 let Inquirer = require("inquirer");
 let Keys = require("./keys");
 
-let query;
+let query = "SELECT * FROM products WHERE ?";
+
 let connection = Mysql.createConnection({
     host:"localhost",
     port:3306,
@@ -11,6 +12,52 @@ let connection = Mysql.createConnection({
     database:"bamazonDB"
 
 });
+
+function validateInput(value) {
+	var integer = Number.isInteger(parseFloat(value));
+	var sign = Math.sign(value);
+
+	if (integer && (sign === 1)) {
+		return true;
+	} else {
+		return 'Please enter a whole non-zero number.';
+	}
+}
+
+let orderForm = function(){
+    Inquirer
+    .prompt([
+        {
+        name:"itemId",
+        type:"input",
+        message:"What is the product id # of the item you would like to puchase?",
+        validate: validateInput,
+        filter:Number
+    },
+    {
+        name:"quantity",
+        type:"input",
+        message:"How many do you want?",
+        validate: validateInput,
+        filter:Number
+    }
+    ]).then(function(input){
+        let item = input.itemId;
+        let quantity = input.quantity;
+        
+        connection.query(query, {item_id: item}, function(err,data){
+            if(err) throw err;
+            console.log('data = ' + JSON.stringify(data));
+            if (data.length === 0){
+                console.log(`ERROR: Invalid Item ID. Please select a valid Item ID.`)
+                productSearch();
+            }
+            else{
+                
+            }
+        })
+    })
+}
 
 function allSearch(){
     connection.query("SELECT * FROM products", function(err, res){
@@ -23,6 +70,7 @@ function allSearch(){
     })
 }
 
+
 function nameSearch(){
     console.log("name check")
     Inquirer
@@ -33,7 +81,7 @@ function nameSearch(){
         })
         .then(function(answer){
             console.log(answer.item_name);
-            connection.query("SELECT * FROM products WHERE ?", {product_name: answer.item_name}, function(err, res){
+            connection.query(query, {product_name: answer.item_name}, function(err, res){
                 if(err) throw err;
                 for (i = 0; i < res.length;i++){
                     console.log(`\nID:${res[i].item_id}. Item Name: ${res[i].product_name}. Department: ${res[i].department_name}. Price: ${res[i].price}. Quantity: ${res[i].stock_quantity}. \n`)
@@ -46,7 +94,7 @@ function nameSearch(){
 
 function idSearch(){
 
-    console.log("name check")
+    console.log("id check")
     Inquirer
         .prompt({
             name:"item_id",
@@ -55,7 +103,7 @@ function idSearch(){
         })
         .then(function(answer){
             console.log(answer.item_id);
-            connection.query("SELECT * FROM products WHERE ?", {item_id: answer.item_id}, function(err, res){
+            connection.query(query, {item_id: answer.item_id}, function(err, res){
                 if(err) throw err;
                 for (i = 0; i < res.length;i++){
                     console.log(`\nID:${res[i].item_id}. Item Name: ${res[i].product_name}. Department: ${res[i].department_name}. Price: ${res[i].price}. Quantity: ${res[i].stock_quantity}. \n`)
@@ -67,8 +115,34 @@ function idSearch(){
 };
 
 function departmentSearch(){
-    productSearch();
+    console.log("Department check")
+    Inquirer
+        .prompt({
+            name:"department",
+            type:"list",
+            message:"\nWhat department would you like to see? \n",
+            choices:[
+                "hats",
+                "mats",
+                "cats",
+                "rats"
+            ]
+        })
+        .then(function(input){
+            console.log(input.department);
+            connection.query(query, {department_name: input.department}, function(err, res){
+                if(err) throw err;
+                for (i = 0; i < res.length;i++){
+                    console.log(`\nID:${res[i].item_id}. Item Name: ${res[i].product_name}. Department: ${res[i].department_name}. Price: ${res[i].price}. Quantity: ${res[i].stock_quantity}. \n`)
+                }
+                
+            })
+            productSearch();  
+  
+        })
 };
+
+
 
 function productSearch(){
     Inquirer
@@ -105,8 +179,69 @@ function productSearch(){
         });
 };
 
+let loginBase = function(){
+    Inquirer
+     .prompt({
+         name: "login",
+         type:"input",
+         message: "Please put in you user name. (Use: Pip)"
+     },
+     {
+         name:"password",
+         type:"input",
+         message:"Enter your password. (Use: password)"
+     }).then(function(info){
+         let userName = info.login;
+         let userPassword = info.password;
+         if(userName === "Pip" || userName === "pip" && userPassword === "password"){
+             loginOptions();
+         }
+
+
+     })
+};
+
+ let staffLogin = function(){
+
+ }
+
+function loginScreen(){
+    Inquirer
+        .prompt({
+            name:"search",
+            type: "list",
+            message:"\nWelcome to The Hats, Mats, Rats, & Cats Emporium! \n Please chose one",
+            choices:[
+                "login",
+                "Look at available items without logging in.",
+                "Know what you want? Jump straight to buying it.",
+                "Managament Login",
+                "Exit"
+            ]
+        })
+        .then(function(input){
+            switch(input.search){
+                case "login":
+                    loginBase();
+                    break;
+                case "Look at available items without logging in.":
+                    productSearch();
+                    break;
+                case "Know what you want? Jump straight to buying it.":
+                    orderForm();
+                    break;
+                case "Managament Login":
+                    staffLogin();
+                    break;
+                case "Exit":
+                    connection.end();
+                    break;
+            }
+        });
+};
+
 connection.connect(function(err){
     if(err) throw err;
     console.log(`Connection thread id ${connection.threadId}`)
-    productSearch();
+    loginScreen();
 })
