@@ -32,7 +32,7 @@ let orderForm = function(){
         {
         name:"itemId",
         type:"input",
-        message:"What is the product id # of the item you would like to puchase?",
+        message:"What is the product id # of the item you would like to purchase?",
         validate: validateInput,
         filter:Number
     },
@@ -61,11 +61,11 @@ let orderForm = function(){
                 // console.log('productData.stock_quantity = ' + productData.stock_quantity);
                 
                 if (quantity <= productData.stock_quantity){
-                    console.log('Congratulations, the product you requested is in stock! Placing order!');
+                    console.log('\nCongratulations, the product you requested is in stock! Placing order!');
 
                     // let updateQueryStr = `UPDATE product SET stock_quantity = ${productData.stock_quantity - quantity} WHERE item_id = ${item}`;
                     let newQuantity = productData.stock_quantity - quantity; 
-                    console.log(newQuantity)
+                    console.log(`there are now ${newQuantity} ${productData.product_name}'s left.`)
                     let updateQueryStr = connection.query("UPDATE products SET ? WHERE ?",
                     [
                       {
@@ -79,19 +79,20 @@ let orderForm = function(){
                         if(err) throw err;
                         // console.log(`Item effected ${data}`)
                         
-                        console.log(`Your oder has been placed! Your total is $${productData.price*quantity}.`);
+                        console.log(`Your order has been placed! Your total is $${productData.price*quantity}.`);
                         console.log("Thanks for shopping at The Hats, Mats, Rats, & Cats Emporium!")
                         console.log("\n---------------------------------------------------------------------\n")
-                        productSearch();
+                        loginScreen();
                         
                     })
-
+                    console.log("\nOrder info\n---------------------------------------------------------------------");
                     console.log(updateQueryStr.sql)
+                    console.log("---------------------------------------------------------------------\n");
                 }else{
                     console.log('Sorry, there is not enough product in stock, your order can not be placed as is.');
 					console.log('Please modify your order.');
-                    console.log("\n---------------------------------------------------------------------\n");
-                    productSearch();
+                    console.log("---------------------------------------------------------------------\n");
+                    loginScreen();
                 }
             }
         })
@@ -102,7 +103,8 @@ function allSearch(){
     connection.query("SELECT * FROM products", function(err, res){
         if(err) throw err;
         for (let i = 0; i < res.length;i++){
-             console.log(`ID ${res[i].item_id}: Item name ${res[i].product_name}, Department ${res[i].department_name}, Price $${res[i].price}, currently in stock ${res[i].stock_quantity}.`)
+
+            console.log(`ID ${res[i].item_id}: Item name ${res[i].product_name}, Department ${res[i].department_name}, Price $${res[i].price}, currently in stock ${res[i].stock_quantity}.`)
         };
         orderForm();
        
@@ -218,31 +220,31 @@ function productSearch(){
         });
 };
 
-let loginBase = function(){
-    Inquirer
-     .prompt({
-         name: "login",
-         type:"input",
-         message: "Please put in you user name. (Use: Pip)"
-     },
-     {
-         name:"password",
-         type:"input",
-         message:"Enter your password. (Use: password)"
-     }).then(function(info){
-         let userName = info.login;
-         let userPassword = info.password;
-         if(userName === "Pip" || userName === "pip" && userPassword === "password"){
-             loginOptions();
-         }
+// let loginBase = function(){
+//     Inquirer
+//      .prompt({
+//          name: "login",
+//          type:"input",
+//          message: "Please put in you user name. (Use: Pip)"
+//      },
+//      {
+//          name:"password",
+//          type:"input",
+//          message:"Enter your password. (Use: password)"
+//      }).then(function(info){
+//          let userName = info.login;
+//          let userPassword = info.password;
+//          if(userName === "Pip" || userName === "pip" && userPassword === "password"){
+//              loginOptions();
+//          }
 
 
-     })
-};
+//      })
+// };
 
- let staffLogin = function(){
+//  let staffLogin = function(){
     
- };
+//  };
 
 function loginScreen(){
     Inquirer
@@ -251,7 +253,7 @@ function loginScreen(){
             type: "list",
             message:"\nWelcome to The Hats, Mats, Rats, & Cats Emporium! \n Please chose one",
             choices:[
-                "login",
+                // "login",
                 "Browse available items",
                 "Know what you want? Jump straight to buying it.",
                 "Managament Login",
@@ -260,9 +262,9 @@ function loginScreen(){
         })
         .then(function(input){
             switch(input.search){
-                case "login":
-                    loginBase();
-                    break;
+                // case "login":
+                //     loginBase();
+                //     break;
                 case "Browse available items":
                     productSearch();
                     break;

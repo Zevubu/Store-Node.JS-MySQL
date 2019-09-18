@@ -16,18 +16,22 @@ let connection = Mysql.createConnection({
 });
 
 function veiwProducts(){
+    // list every available item: the item IDs, names, prices, and quantities.
     Managment();
 };
 
 function lowProducts (){
+    // list all items with an inventory count lower than five.
     Managment();
 };
 
 function addInventory (){
+    // display a prompt that will let the manager “add more” of any item currently in the store.
     Managment();
 };
 
 function addProduct (){
+    // allow the manager to add a completely new product to the store.
     Managment();
 };
 
@@ -72,5 +76,14 @@ let Managment = function(){
  })
  
 }
+let connecting = function(){
 
-module.exports = Managment;
+
+connection.connect(function(err){
+    if(err) throw err;
+    console.log(`Connection thread id ${connection.threadId}`)
+    Managment();
+})
+}
+
+module.exports = connecting;
