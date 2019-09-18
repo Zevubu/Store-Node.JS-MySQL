@@ -15,8 +15,8 @@ let connection = Mysql.createConnection({
 });
 
 function validateInput(value) {
-	var integer = Number.isInteger(parseFloat(value));
-	var sign = Math.sign(value);
+	let integer = Number.isInteger(parseFloat(value));
+	let sign = Math.sign(value);
 
 	if (integer && (sign === 1)) {
 		return true;

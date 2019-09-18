@@ -15,19 +15,83 @@ let connection = Mysql.createConnection({
 
 });
 
+
 function veiwProducts(){
     // list every available item: the item IDs, names, prices, and quantities.
-    Managment();
-};
+    connection.query("SELECT * FROM products", function(err, res){
+        if(err) throw err;
+        console.log("\n")
+        for (let i = 0; i < res.length;i++){
+
+            console.log(`ID ${res[i].item_id}: Item name ${res[i].product_name}, Department ${res[i].department_name}, Price $${res[i].price}, currently in stock ${res[i].stock_quantity}.`)
+        };
+        Managment();
+    })
+}
+    
 
 function lowProducts (){
+    connection.query("SELECT * FROM products WHERE stock_quantity <= 5", function(err,res){
+        if(err) throw err;
+        console.log("\n");
+        for (let i = 0; i < res.length;i++){
+
+            console.log(`ID ${res[i].item_id}: Item name ${res[i].product_name}, Department ${res[i].department_name}, Price $${res[i].price}, currently in stock ${res[i].stock_quantity}.`)
+        };
+        Managment();
+    })
     // list all items with an inventory count lower than five.
-    Managment();
+    
+};
+function validateInput(value){
+    let integer = Number.isInteger(parseFloat(value));
+    let sign = Math.sign(value);
+
+    if (integer && (sign === 1)) {
+        return true;
+    }else{
+        return 'Please enter a whole non-zero number.';
+    };
+
 };
 
 function addInventory (){
     // display a prompt that will let the manager “add more” of any item currently in the store.
-    Managment();
+    Inquirer
+    .prompt([
+        {
+        name: "ItemID",
+        type:"input",
+        message: "What item would you like to add more of.",
+        validate: validateInput,
+        filter: Number
+        },{
+        name: "quantity",
+        type:"input",
+        message: "how many are you adding",
+        validate: validateInput,
+        filter: Number 
+        }
+
+    ]).then(function(input){
+        let item = input.itemId;
+        let quantity = input.quantity;
+
+        let queryStr =  'SELECT * FROM products WHERE ?';
+
+        let query = connection.query(
+        "INSERT INTO products SET ?",
+        {
+            item_id: item,
+            quantity: 
+        }
+
+        )
+        Managment();
+
+    })
+    
+  
 };
 
 function addProduct (){
@@ -85,5 +149,6 @@ connection.connect(function(err){
     Managment();
 })
 }
+
 
 module.exports = connecting;
