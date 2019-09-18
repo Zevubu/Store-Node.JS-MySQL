@@ -1,5 +1,6 @@
 let Mysql = require("mysql");
 let Inquirer = require("inquirer");
+let Managment = require("./bamazonManager")
 let Keys = require("./keys");
 
 let query = "SELECT * FROM products WHERE ?";
@@ -240,7 +241,7 @@ let loginBase = function(){
 };
 
  let staffLogin = function(){
-    loginScreen()
+    
  };
 
 function loginScreen(){
@@ -251,7 +252,7 @@ function loginScreen(){
             message:"\nWelcome to The Hats, Mats, Rats, & Cats Emporium! \n Please chose one",
             choices:[
                 "login",
-                "Look at available items without logging in.",
+                "Browse available items",
                 "Know what you want? Jump straight to buying it.",
                 "Managament Login",
                 "Exit"
@@ -262,14 +263,14 @@ function loginScreen(){
                 case "login":
                     loginBase();
                     break;
-                case "Look at available items without logging in.":
+                case "Browse available items":
                     productSearch();
                     break;
                 case "Know what you want? Jump straight to buying it.":
                     orderForm();
                     break;
                 case "Managament Login":
-                    staffLogin();
+                    Managment();
                     break;
                 case "Exit":
                     connection.end();
@@ -283,3 +284,4 @@ connection.connect(function(err){
     console.log(`Connection thread id ${connection.threadId}`)
     loginScreen();
 })
+// module.exports = loginScreen;
