@@ -1,6 +1,6 @@
 let Mysql = require("mysql");
 let Inquirer = require("inquirer");
-let Managment = require("./bamazonManager")
+let connecting = require("./bamazonManager")
 let Keys = require("./keys");
 
 let query = "SELECT * FROM products WHERE ?";
@@ -272,7 +272,7 @@ function loginScreen(){
                     orderForm();
                     break;
                 case "Managament Login":
-                    Managment();
+                    connecting();
                     break;
                 case "Exit":
                     connection.end();
@@ -281,9 +281,11 @@ function loginScreen(){
         });
 };
 
-connection.connect(function(err){
+ 
+    connection.connect(function(err){
     if(err) throw err;
     console.log(`Connection thread id ${connection.threadId}`)
     loginScreen();
-})
+    })
+
 // module.exports = loginScreen;

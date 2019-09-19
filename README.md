@@ -1,6 +1,9 @@
 # Store-Node.JS-MySQL
  Amazon-like storefront the operates in your terminal.
 
+ You can access bamazonManager through bamazonCustomer but for some reason connection end doesn't work when you enter it this way.
+ however in order for the bamazonManager to work on it's own You have to instigate a function called connecting() at the very bottom.  bamazonCustomer doesn't work  with connecting() exposed.
+
 Begin by going to bamazonCustomer.js. This will give you 4 options: Look, Buy, Manager, exit 
     $ node bamazonCustomer.js                                                                                                                                                                                          Connection thread id 65
     ?
