@@ -79,15 +79,25 @@ function addInventory (){
 
         let queryStr =  'SELECT * FROM products WHERE ?';
 
-        let query = connection.query(
-        "INSERT INTO products SET ?",
-        {
-            item_id: item,
-            quantity: 
-        }
+        connection.query(queryStr, {item_id:item}, function(err,data){
+            if(err) throw err;
+            let productData = data[0]
+            console.log('productData = ' + JSON.stringify(productData));
+            // console.log('productData.stock_quantity = ' + productData.stock_quantity);
 
-        )
-        Managment();
+            // console.log()
+
+            if(data.length === 0){
+                console.log(`ERROR: Invalid Item ID. Please select a valid Item ID.`);
+                addInventory();
+            }else{
+                let productData = data[0]
+                console.log('productData = ' + JSON.stringify(productData));
+				console.log('productData.stock_quantity = ' + productData.stock_quantity);
+            }
+        });
+        
+        // Managment();
 
     })
     
@@ -140,7 +150,7 @@ let Managment = function(){
  })
  
 }
-let connecting = function(){
+// let connecting = function(){
 
 
 connection.connect(function(err){
@@ -148,7 +158,7 @@ connection.connect(function(err){
     console.log(`Connection thread id ${connection.threadId}`)
     Managment();
 })
-}
+// }
 
 
-module.exports = connecting;
+// module.exports = connecting;
