@@ -271,9 +271,9 @@ function loginScreen(){
                 case "Know what you want? Jump straight to buying it.":
                     orderForm();
                     break;
-                // case "Managament Login":
-                //     Managment();
-                //     break;
+                case "Managament Login":
+                    Managment();
+                    break;
                 case "Exit":
                     connection.end();
                     break;
