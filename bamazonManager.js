@@ -39,8 +39,9 @@
             for (let i = 0; i < res.length;i++){
 
                 console.log(`ID ${res[i].item_id}: Item name ${res[i].product_name}, Department ${res[i].department_name}, Price $${res[i].price}, currently in stock ${res[i].stock_quantity}.`)
+                Managment();
             };
-            Managment();
+            
         })
         // list all items with an inventory count lower than five.
         
@@ -76,7 +77,7 @@
             }
 
         ]).then(function(input){
-            let item = input.itemId;
+            let item = input.ItemID;
             let quantity = input.quantity;
 
             let queryStr =  'SELECT * FROM products WHERE ?';
@@ -93,27 +94,22 @@
                     console.log(`ERROR: Invalid Item ID. Please select a valid Item ID.`);
                     addInventory();
                 }else{
-                    let productData = data[0]
+                    productData = data[0]
                     // console.log('productData = ' + JSON.stringify(productData));
                     // console.log('productData.stock_quantity = ' + productData.stock_quantity);
                     console.log(`Updating inventory...`);
 
-                    let updateQuery = `UPDATE products SET stock_quantity = ${productData.stock_quantity} WHERE item_id = ${item}`;
+                    let updateQuery = `UPDATE products SET stock_quantity = ${productData.stock_quantity + quantity} WHERE item_id = ${item}`;
                     connection.query(updateQuery, function(err, data){
                         if(err) throw err;
+                        // console.log(`data count: ${JSON.stringify(productData)}`)
                         console.log(`Stock count for Item ID ${item} has been updated to ${productData.stock_quantity + quantity}.`)
                         console.log('\n------------------------------------------\n');
+                        Managment();
                     })
-
-
                 }
             });
-            
-            Managment();
-
         })
-        
-    
     };
 
     function addProduct (){
@@ -124,18 +120,24 @@
                 name:"product_name",
                 message: "Please enter the new product name."
             },{
-                type: "input",
-                name:"department_name",
-                message: "Please enter the new product name."
+                name:"department",
+                type: "list",
+                message: "Which department?",
+                choices:[
+                    "hats",
+                    "mats",
+                    "cats",
+                    "rats"
+                ]
             },{
                 type: "input",
                 name:"price",
-                message: "Please enter the new product name.",
+                message: "Please enter the products price.",
                 validate: validateInput
             },{
                 type: "input",
-                name:"product_name",
-                message: "Please enter the new product name.",
+                name:"quantity",
+                message: "How many do you have in stock.",
                 validate: validateInput
             },
             
@@ -144,15 +146,16 @@
 
             queryStr = "INSERT INTO products SET ?";
 
-            connection.query(queryStr,input, function(err,res){
+            connection.query(queryStr,{product_name: input.product_name, department_name: input.department, price: input.price, stock_quantity: input.quantity}, function(err,res){
                 if (err) throw err;
 
-                console.log(`New product has been added to the inventory under Item ID ${results.insertId}.`);
-			console.log("\n---------------------------------------------------------------------\n");
+                console.log(`New product has been added to the inventory under Item ID ${res.insertId}.`);
+            console.log("\n---------------------------------------------------------------------\n");
+             Managment();
             })
         })
         // allow the manager to add a completely new product to the store.
-        Managment();
+       
     };
 
 
