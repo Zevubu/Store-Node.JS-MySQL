@@ -94,12 +94,22 @@
                     addInventory();
                 }else{
                     let productData = data[0]
-                    console.log('productData = ' + JSON.stringify(productData));
-                    console.log('productData.stock_quantity = ' + productData.stock_quantity);
+                    // console.log('productData = ' + JSON.stringify(productData));
+                    // console.log('productData.stock_quantity = ' + productData.stock_quantity);
+                    console.log(`Updating inventory...`);
+
+                    let updateQuery = `UPDATE products SET stock_quantity = ${productData.stock_quantity} WHERE item_id = ${item}`;
+                    connection.query(updateQuery, function(err, data){
+                        if(err) throw err;
+                        console.log(`Stock count for Item ID ${item} has been updated to ${productData.stock_quantity + quantity}.`)
+                        console.log('\n------------------------------------------\n');
+                    })
+
+
                 }
             });
             
-            // Managment();
+            Managment();
 
         })
         
@@ -107,6 +117,40 @@
     };
 
     function addProduct (){
+        Inquirer
+        .prompt([
+            {
+                type: "input",
+                name:"product_name",
+                message: "Please enter the new product name."
+            },{
+                type: "input",
+                name:"department_name",
+                message: "Please enter the new product name."
+            },{
+                type: "input",
+                name:"price",
+                message: "Please enter the new product name.",
+                validate: validateInput
+            },{
+                type: "input",
+                name:"product_name",
+                message: "Please enter the new product name.",
+                validate: validateInput
+            },
+            
+        ]).then(function(input){
+            console.log(`Adding new item: \n product name= ${input.product_name} \n Deparment name = ${input.department_name} \n price = ${input.price}\n Stock Qauntity = ${input.stock_quantity}`);
+
+            queryStr = "INSERT INTO products SET ?";
+
+            connection.query(queryStr,input, function(err,res){
+                if (err) throw err;
+
+                console.log(`New product has been added to the inventory under Item ID ${results.insertId}.`);
+			console.log("\n---------------------------------------------------------------------\n");
+            })
+        })
         // allow the manager to add a completely new product to the store.
         Managment();
     };
