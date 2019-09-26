@@ -189,7 +189,7 @@
                         addProduct() 
                         break;
                     case "Exit":
-                        connection.end();
+                        process.exit(1);
                         break;      
                 }
             })   
